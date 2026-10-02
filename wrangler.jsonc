@@ -1,0 +1,10 @@
+{
+  // Site estático da landing page (Cloudflare Workers + Static Assets)
+  // O "name" precisa ser igual ao nome do Worker criado no painel da Cloudflare.
+  "name": "lp-daniele-melo",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./",
+    "not_found_handling": "single-page-application"
+  }
+}

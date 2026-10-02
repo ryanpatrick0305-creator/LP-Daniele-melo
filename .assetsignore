@@ -1,0 +1,7 @@
+# Arquivos que não devem ser publicados no site
+.git
+.assetsignore
+wrangler.jsonc
+IDENTIDADE VISUAL
+REFERENCIA
+IMAGENS/SESSÃO QUEM CUIDA DE VC
