@@ -180,6 +180,11 @@ html{scroll-padding-top:100px}
 .method__video .media{border-radius:var(--radius-lg);box-shadow:var(--shadow)}
 .method__video::before{content:"";position:absolute;inset:-16px 16px 16px -16px;border-radius:var(--radius-lg);background:var(--gold-light);opacity:.35;z-index:-1}
 .method__text > p{margin-top:18px;font-size:18px}
+.vplayer video{display:block;width:100%;height:100%;object-fit:cover;background:#231202}
+.vplayer__play{position:absolute;inset:0;margin:auto;width:76px;height:76px;border:0;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:var(--gold-deep);box-shadow:0 12px 30px -10px rgba(0,0,0,.55);cursor:pointer;transition:transform .2s}
+.vplayer__play:hover{transform:scale(1.06)}
+.vplayer__play svg{width:34px;height:34px;margin-left:4px}
+.vplayer.is-playing .vplayer__play{display:none}
 .steps{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:14px}
 .step{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;padding:18px 20px;background:var(--white);border:1px solid var(--line);border-radius:var(--radius)}
 .step__n{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--sand);color:var(--gold-deep);font-family:var(--font-title);font-size:24px;font-weight:800}
@@ -187,17 +192,15 @@ html{scroll-padding-top:100px}
 .step p{font-size:15.5px;margin-top:4px;color:var(--muted)}
 @media (max-width:860px){.method{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:32px}.step{padding:14px 16px;gap:14px}.step h3{font-size:22px}}
 @media (max-width:640px){
-  /* Celular: vídeo à esquerda com título e introdução à direita; etapas ocupam a largura toda abaixo */
-  .method{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);column-gap:16px;row-gap:0;align-items:start}
+  /* Celular: título e introdução em cima, vídeo grande e centralizado no meio, etapas embaixo */
+  .method{grid-template-columns:minmax(0,1fr);gap:0}
   .method__text{display:contents}
-  .method__video{grid-column:1;grid-row:1 / span 3;max-width:none}
-  .method__video::before{inset:-8px 8px 8px -8px}
-  .method .eyebrow,.method h2,.method__text > p{grid-column:2}
-  .method .eyebrow{margin:0 0 8px;font-size:11px;letter-spacing:.12em}
-  .method .eyebrow::before{width:16px}
-  .method h2{font-size:34px}
-  .method__text > p{margin-top:10px;font-size:15px}
-  .method .steps{grid-column:1 / -1;margin-top:28px}
+  .method .eyebrow{order:1}
+  .method h2{order:2}
+  .method__text > p{order:3;margin-top:12px;font-size:16px}
+  .method__video{order:4;max-width:340px;margin:32px auto 0}
+  .method__video::before{inset:-10px 10px 10px -10px}
+  .method .steps{order:5;margin-top:32px}
 }
 
 /* ============ 4. DEPOIMENTOS GOOGLE ============ */
@@ -522,9 +525,10 @@ html.lenis{scroll-behavior:auto}
   <img class="leaf leaf--edge leaf--metodo" src="IMAGENS/DECOR/folhas.webp" alt="" aria-hidden="true">
   <div class="container method">
     <div class="method__video">
-      <!-- Vídeo de transições (formato vertical 9:16). Substituir por <video controls playsinline poster="..."> -->
-      <div class="media r-9x16">
-        <div class="ph"><svg><use href="#i-video"/></svg>VÍDEO DE TRANSIÇÕES<small>Método Nanotech · 9:16<br>Fotos de referência no Instagram</small></div>
+      <!-- Vídeo vertical 9:16 (720x1280). preload="none": só baixa quando a pessoa der play -->
+      <div class="media r-9x16 vplayer">
+        <video src="IMAGENS/METODO/metodo.mp4" poster="IMAGENS/METODO/metodo-capa.webp" preload="none" playsinline width="720" height="1280" aria-label="Vídeo: Daniele Melo apresenta o Método Nanotech"></video>
+        <button class="vplayer__play" type="button" aria-label="Assistir ao vídeo do Método Nanotech"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg></button>
       </div>
     </div>
     <div class="method__text">
@@ -826,6 +830,15 @@ const WHATSAPP_MSG = "Olá! Vim pelo site e quero agendar minha avaliação.";
     }));
   };
   if(document.readyState === "complete") initSmooth(); else addEventListener("load", initSmooth);
+
+  // Vídeo do método: a capa fica limpa (sem controles) até o primeiro play; ao pausar ou terminar o botão volta
+  document.querySelectorAll('.vplayer').forEach(box=>{
+    const v=box.querySelector('video'), btn=box.querySelector('.vplayer__play');
+    btn.addEventListener('click',()=>{v.controls=true;v.play()});
+    v.addEventListener('play',()=>box.classList.add('is-playing'));
+    v.addEventListener('pause',()=>box.classList.remove('is-playing'));
+    v.addEventListener('ended',()=>box.classList.remove('is-playing'));
+  });
 
   // Barra fixa do WhatsApp: aparece depois do hero e some quando outro CTA principal está na tela
   const bar = document.getElementById("wa-bar");
